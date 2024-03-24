@@ -20,5 +20,11 @@ rad.json
 *.flf
 #Test results file
 TestResults.xml
+<<<<<<< HEAD
 node_modules/
 config.env
+=======
+
+node_modules/
+config.env
+>>>>>>> refs/remotes/origin/main
