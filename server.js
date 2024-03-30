@@ -1,55 +1,27 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
-const mongoose = require("mongoose");
 dotenv.config({ path: "config.env" });
-// Connect with db
-mongoose
-  .connect(process.env.DB_URI)
-  .then((conn) => {
-    console.log(`Database Connected: ${conn.connection.host}`);
-  })
-  .catch((err) => {
-    console.error(`Database Error: ${err}`);
-    process.exit(1);
-  });
+const dbConnection = require("./config/database");
+const categoryRoute = require("./routes/categoryRoute");
 const app = express();
-
 const port = process.env.PORT;
-// middlewares
-app.use(express.json());
 
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-  console.log(`you work in ${process.env.NODE_ENV} mode`);
-}
-// 1- Create schema
-const categorySchema = new mongoose.Schema({
-  name: String,
-});
+(async () => {
+  await dbConnection();
 
-// 2- create model
-const categoryModel = mongoose.model("Category", categorySchema);
+  //middleware
+  app.use(express.json());
 
-// Router
-app.post("/", (req, res) => {
-  const name = req.body.name;
-  console.log(req.body);
-  const newCategory = new categoryModel({ name });
-  newCategory
-    .save()
-    .then((doc) => {
-      res.json(doc);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
-});
+  if (process.env.NODE_ENV === "development") {
+    app.use(morgan("dev"));
+    console.log(`you work in ${process.env.NODE_ENV} mode`);
+  }
 
-app.get("/", (req, res) => {
-  res.send("Hello world!");
-});
+  // Mount Router
+  app.use("/api/v1/categories", categoryRoute);
 
-app.listen(port, () => {
-  console.log(`app is running in port ${port}`);
-});
+  app.listen(port, () => {
+    console.log(`app is running in port ${port}`);
+  });
+})();
