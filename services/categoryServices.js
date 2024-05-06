@@ -14,12 +14,18 @@ exports.getCategories = asyncHandler(async (req, res) => {
 });
 
 //@desc    Get spacific category by id
-//@router  GET /api/v1/categories/:id 
+//@router  GET /api/v1/categories/:id
 //@access   Public
-exports.getCategory = asyncHandler(async(req,res)=>{
-  const = req. 
-})
-
+exports.getCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const category = await CategoryModel.findById(id);
+  if (!category) {
+    res
+      .status(404)
+      .json({ msg: `no category for this id ${id}` });
+  }
+  res.status(200).json({ data: category });
+});
 
 //@desc    create Categories
 //@router  POST /api/v1/categories
