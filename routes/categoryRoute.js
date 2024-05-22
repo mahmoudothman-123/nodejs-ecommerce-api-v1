@@ -11,11 +11,11 @@ const {
 const routerCategories = express.Router();
 
 routerCategories
-  .route("/")
+  .route("/api/v1/categories")
   .get(getCategories)
   .post(createCategories);
 routerCategories
-  .route("/:id")
+  .route("/api/v1/categories/:id")
   .get(getCategory)
   .put(updateCategory)
   .delete(deleteCategory);

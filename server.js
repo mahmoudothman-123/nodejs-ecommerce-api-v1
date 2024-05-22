@@ -2,6 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 dotenv.config({ path: "config.env" });
+const ApiError = require("./utils/apiError");
+const globalError = require('./middlewares/errorMiddlewares')
 const dbConnection = require("./config/database");
 const categoryRoute = require("./routes/categoryRoute");
 const app = express();
@@ -19,7 +21,15 @@ const port = process.env.PORT;
   }
 
   // Mount Router
-  app.use("/api/v1/categories", categoryRoute);
+  app.use(categoryRoute);
+
+  //Create error and send it error handling middleware
+  app.all("*", (req, res, next) => {
+    next(new ApiError(`Can't find this router: ${req.originalUrl}`, 400));
+  });
+
+  // Global error handling middleware
+  app.use(globalError);
 
   app.listen(port, () => {
     console.log(`app is running in port ${port}`);
