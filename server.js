@@ -6,6 +6,7 @@ const ApiError = require("./utils/apiError");
 const globalError = require('./middlewares/errorMiddlewares')
 const dbConnection = require("./config/database");
 const categoryRoute = require("./routes/categoryRoute");
+const { events } = require("./models/categoryModel");
 const app = express();
 const port = process.env.PORT;
 
@@ -25,15 +26,28 @@ const port = process.env.PORT;
 
   //Create error and send it error handling middleware
   app.all("*", (req, res, next) => {
-    next(new ApiError(`Can't find this router: ${req.originalUrl}`, 400));
+    next(
+      new ApiError(`Can't find this router: ${req.originalUrl}`, 400)
+    );
   });
 
-  // Global error handling middleware
+  // Global error handling middleware for express
   app.use(globalError);
-
-  app.listen(port, () => {
-    console.log(`app is running in port ${port}`);
-  });
 })();
+const server = app.listen(port, () => {
+  console.log(`app is running in port ${port}`);
+});
 
+
+  // handle rejection outside express 
+
+  process.on("unhandledRejection", (err) => {
+    console.warn(
+      `UNHANDLED PROMISE REJECTION: ${err.name} | ${err.message}`
+    );
+    server.close(() => {
+      console.error(`Shutting down.....`);
+      process.exit(1);
+    });
+  });
 
