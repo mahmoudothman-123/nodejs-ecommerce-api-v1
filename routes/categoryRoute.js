@@ -12,16 +12,16 @@ const {
   deleteCategory,
 } = require("../services/categoryServices");
 
-const routerCategories = express.Router();
+const router = express.Router();
 
-routerCategories
+router
   .route("/api/v1/categories")
   .get(getCategories)
   .post(createCategoryValidator, createCategories);
-routerCategories
+router
   .route("/api/v1/categories/:id")
   .get(getCategoryValidator, getCategory)
   .put(updateCategoryValidator, updateCategory)
   .delete(deleteCategory, deleteCategory);
 
-module.exports = routerCategories;
+module.exports = router;

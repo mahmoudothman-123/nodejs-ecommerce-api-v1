@@ -3,9 +3,10 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 dotenv.config({ path: "config.env" });
 const ApiError = require("./utils/apiError");
-const globalError = require('./middlewares/errorMiddlewares')
+const globalError = require("./middlewares/errorMiddlewares");
 const dbConnection = require("./config/database");
 const categoryRoute = require("./routes/categoryRoute");
+const SubCategoryRoute = require("./routes/subCategoryRoute");
 const app = express();
 const port = process.env.PORT;
 
@@ -22,35 +23,26 @@ const port = process.env.PORT;
 
   // Mount Router
   app.use(categoryRoute);
-
+  app.use(SubCategoryRoute);
   //Create error and send it error handling middleware
   app.all("*", (req, res, next) => {
-    next(
-      new ApiError(`Can't find this router: ${req.originalUrl}`, 400)
-    );
+    next(new ApiError(`Can't find this router: ${req.originalUrl}`, 400));
   });
 
   // Global error handling middleware for express
   app.use(globalError);
 })();
 
-
-
 const server = app.listen(port, () => {
   console.log(`app is running in port ${port}`);
 });
 
+// handle rejection outside express
 
-  // handle rejection outside express 
-
-  process.on("unhandledRejection", (err) => {
-    console.error(
-      `UNHANDLED PROMISE REJECTION: ${err.name} | ${err.message}`
-    );
-    server.close(() => {
-      console.error(`Shutting down.....`);
-      process.exit(1);
-    });
+process.on("unhandledRejection", (err) => {
+  console.error(`UNHANDLED PROMISE REJECTION: ${err.name} | ${err.message}`);
+  server.close(() => {
+    console.error(`Shutting down.....`);
+    process.exit(1);
   });
-
- 
+});
