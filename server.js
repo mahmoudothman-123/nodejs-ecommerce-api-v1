@@ -12,7 +12,6 @@ const port = process.env.PORT;
 
 (async () => {
   await dbConnection();
-
   //middleware
   app.use(express.json());
 
@@ -22,8 +21,8 @@ const port = process.env.PORT;
   }
 
   // Mount Router
-  app.use(categoryRoute);
-  app.use(SubCategoryRoute);
+  app.use("/api/v1/categories", categoryRoute);
+  app.use("/api/v1/subcategories", SubCategoryRoute);
   //Create error and send it error handling middleware
   app.all("*", (req, res, next) => {
     next(new ApiError(`Can't find this router: ${req.originalUrl}`, 400));
@@ -31,18 +30,17 @@ const port = process.env.PORT;
 
   // Global error handling middleware for express
   app.use(globalError);
-})();
 
-const server = app.listen(port, () => {
-  console.log(`app is running in port ${port}`);
-});
-
-// handle rejection outside express
-
-process.on("unhandledRejection", (err) => {
-  console.error(`UNHANDLED PROMISE REJECTION: ${err.name} | ${err.message}`);
-  server.close(() => {
-    console.error(`Shutting down.....`);
-    process.exit(1);
+  const server = app.listen(port, () => {
+    console.log(`app is running in port ${port}`);
   });
-});
+
+  // handle rejection outside express
+  process.on("unhandledRejection", (err) => {
+    console.error(`UNHANDLED PROMISE REJECTION: ${err.name} | ${err.message}`);
+    server.close(() => {
+      console.error(`Shutting down.....`);
+      process.exit(1);
+    });
+  });
+})();

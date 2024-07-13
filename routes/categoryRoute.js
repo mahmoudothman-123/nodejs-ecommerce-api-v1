@@ -12,14 +12,17 @@ const {
   deleteCategory,
 } = require("../services/categoryServices");
 
+const subcategoriesRoute = require("./subCategoryRoute");
 const router = express.Router();
 
+router.use("/:categoryId/subcategories", subcategoriesRoute);
+
 router
-  .route("/api/v1/categories")
+  .route("/")
   .get(getCategories)
   .post(createCategoryValidator, createCategories);
 router
-  .route("/api/v1/categories/:id")
+  .route(":id")
   .get(getCategoryValidator, getCategory)
   .put(updateCategoryValidator, updateCategory)
   .delete(deleteCategory, deleteCategory);
